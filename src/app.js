@@ -1,35 +1,22 @@
 const express = require('express');
 const app = express();
+const { authAdmin, authUser } = require('./middlewares/auth'); // Assuming you have an auth module for admin checks
 
-// app.use("/hello", (req, res)=>{
-//     res.send("Hello, World!");
-// },)
-
-// app.use("/", (req, res)=>{
-//     res.send("default route");
-// })
-
-
-
-app.get('/hello', (req, res) => {
-    res.send('Hello, World! (GET )');
+app.use("/admin", authAdmin);
+app.use("/user", authUser, (req, res, next) => {
+    res.send("User authenticated");
+    next();
 });
 
-app.post('/hello', (req, res) => {
-    res.send('Hello, World! (POST)');
+app.get('/admin/getUser', (req, res, next) => {
+    res.send('Admin User');
 });
 
-// Middleware to log request method and URL
-
-app.get('/', (req, res, next) => {
-    next()
-}, (req,res)=> {
-    res.send('Hello, World! (DEFAULT)');
-    // console.log("Request received at root route")
+app.post('/admin/deleteUser', (req, res, next) => {
+    res.send('Admin Delete User');
 });
- 
-
 
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
+
