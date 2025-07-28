@@ -38,3 +38,40 @@
 //     res.send('Hello, World! (DEFAULT)');
 //     // console.log("Request received at root route")
 // });
+
+
+
+app.use("/admin", authAdmin);
+app.get("/user", authUser, (req, res, next) => {
+    res.send("User authenticated");
+    next();
+});
+
+app.post("/user/login", (req, res) => {
+    res.send("User login successful");
+});
+
+
+app.get('/admin/getUser', (req, res, next) => {
+    res.send('Admin User');
+});
+
+app.post('/admin/deleteUser', (req, res, next) => {
+    res.send('Admin Delete User');
+});
+
+
+// Middleware to log request method and URL
+const { authAdmin, authUser } = require('./middlewares/auth');  
+
+app.get('/getUserData', (req, res) => {
+    throw new Error('This is a test error'); // Simulating an error
+    res.send("Hello, World!");
+});
+
+app.use("/", (err,req,res,next) => {
+    if (err) {
+        console.error(err.stack);
+        res.status(500).send('Something broke!');
+    }
+})
