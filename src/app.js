@@ -3,18 +3,73 @@ const connectDB = require('./config/database');
 const express = require('express');
 const app = express();
 const User = require('./models/user');
+const { validateUser } = require('./utils/helper');
+const bcrypt = require('bcrypt');
 
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
+app.get('/users', async (req, res) => {
+    try {   
+        const users = await User.find({});
+        if (users.length === 0) {
+            return res.status(404).send("No users found");
+        }
+        res.status(200).send(users);
+    }   catch (error) {
+        res.status(500).send("Error fetching users: " + error.message);     
+    }
+})
+
 app.post('/signup',async (req, res) => {
-    console.log("Request body:", req.body);
-    const newUser = new User(req.body);
+    
+    console.log("Received request body:", req.body);
     try {
-        await newUser.save();
+        //validate the request body
+        validateUser(req.body);
+        const{ firstName, lastName, emailId, password, age, gender} = req.body
+        
+        //enccrypt the password 
+        const passwordHash =  await bcrypt.hash(password, 10);
+        console.log("Password hash:", passwordHash);
+
+        //create a new user
+
+        console.log("Request body:", req.body);
+        const newUser = new User({
+            firstName,
+            lastName,
+            emailId,
+            password: passwordHash,
+            age,
+            gender
+        });
+        await newUser.save({
+            validateBeforeSave: true,
+            runValidators: true
+        });
         res.status(201).send("User created successfully")
     } catch (error) {
+        console.error("Error creating user:", error);
         res.status(400).send("Error creating user: " + error.message);
+    }
+})
+
+app.post('/login', async (req, res) => {
+    const { emailId, password } = req.body;
+    try {
+        const user = await User.findOne({ emailId });
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send("Invalid password");
+        }
+        res.status(200).send("Login successful");
+    }
+    catch (error) {
+        res.status(500).send("Error logging in: " + error.message); 
     }
 })
 
@@ -38,7 +93,6 @@ app.get('/user', async (req, res) => {
 
 app.delete('/user', async (req, res) => {
     const userId = req.body.userId;
-
     try{
         const user = await User.findByIdAndDelete(userId);
         if (!user) {
@@ -60,13 +114,26 @@ app.patch('/user', async (req, res) => {
     const userId = req.body.userId;
     const updateData = req.body;
     try {
-        const user = await User.findByIdAndUpdate(userId, updateData, { new: true },{returnDocument: 'after'});
-        if (!user) {
-            return res.status(404).send("User not found");
-        } else {    
-            console.log("User updated:", user);
-            res.status(200).send(user);
+        const ALLOWED_UPDATES = ['firstName', 'lastName', 'age', 'gender']
+        isUpdateAllowed = Object.keys(updateData).every(k=> {
+            if (!ALLOWED_UPDATES.includes(k)) {
+                throw new Error(`Invalid update field: ${k}`);
+            }
+            return true;
+        })
+        if (!isUpdateAllowed) {
+            return res.status(400).send("Invalid update fields");
+        }else {
+            console.log("Update data:", updateData);
+            const user = await User.findByIdAndUpdate(userId, updateData, { new: true },{returnDocument: 'after'});
+            if (!user) {
+                return res.status(404).send("User not found");
+            } else {    
+                console.log("User updated:", user);
+                res.status(200).send(user);
+            }
         }
+        
     } catch (error) {
         res.status(500).send("Error updating user: " + error.message);
     }
