@@ -13,7 +13,6 @@ const validateUser = (user) => {
     if (!validator.isEmail(user.emailId)) {
         throw new Error("Invalid email format");
     }
-    
     // Additional validation logic can be added here
 }
 
