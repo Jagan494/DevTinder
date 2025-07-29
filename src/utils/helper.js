@@ -13,6 +13,15 @@ const validateUser = (user) => {
     if (!validator.isEmail(user.emailId)) {
         throw new Error("Invalid email format");
     }
+    if(!validator.isStrongPassword(user.password, {
+        minLength: 6,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 0
+    })) {   
+        throw new Error("Password must be at least 6 characters long and contain at least one lowercase letter, one uppercase letter, and one number");
+    }
     // Additional validation logic can be added here
 }
 

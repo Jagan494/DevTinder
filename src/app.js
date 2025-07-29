@@ -6,7 +6,6 @@ const User = require('./models/user');
 const { validateUser } = require('./utils/helper');
 const bcrypt = require('bcrypt');
 
-
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.get('/users', async (req, res) => {
@@ -73,7 +72,6 @@ app.post('/login', async (req, res) => {
     }
 })
 
-
 // User api - get /user get user by email from the database
 app.get('/user', async (req, res) => {
     const email = req.body.email;
@@ -123,6 +121,7 @@ app.patch('/user', async (req, res) => {
         })
         if (!isUpdateAllowed) {
             return res.status(400).send("Invalid update fields");
+            
         }else {
             console.log("Update data:", updateData);
             const user = await User.findByIdAndUpdate(userId, updateData, { new: true },{returnDocument: 'after'});
@@ -138,6 +137,7 @@ app.patch('/user', async (req, res) => {
         res.status(500).send("Error updating user: " + error.message);
     }
 });
+
 // Feed api - get /feed fet all users from the database
 app.get('/feed', async (req, res) => {
     try {
@@ -151,8 +151,6 @@ app.get('/feed', async (req, res) => {
         res.status(500).send("Error fetching users: " + error.message);
     }
 })
-
-
 
 connectDB.then(() => {
     app.listen(3000, () => {
