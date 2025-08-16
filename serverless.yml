@@ -1,0 +1,20 @@
+# service: devtinder-lambda
+# provider:
+#   name: aws
+#   runtime: nodejs18.x
+#   region: us-east-1
+#   environment:
+#     NODE_ENV: production
+#     DATABASE_URL: mongodb://localhost:27017/devtinder
+# functions:
+#   app:
+#     handler: lambda.handler
+#     events:
+#       - http:
+#           path: /
+#           method: any
+#       - http:
+#           path: /{proxy+}
+#           method: any
+# dependencies:
+#   - aws-serverless-express

@@ -1,4 +1,5 @@
 const authRouter = require('express').Router();
+const { auth } = require('../middlewares/auth');
 const User = require('../models/user');
 const { validateUser } = require('../utils/helper');
 const bcrypt = require('bcrypt');
@@ -10,13 +11,15 @@ authRouter.post('/signup', async (req, res) => {
         const { firstName, lastName, emailId, password, age, gender} = req.body
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds); // Hash the password with a salt rounds of 10
+        console.log("Hashed password:", hashedPassword);
         const user = new User({
             firstName,
             lastName,
             emailId,
             password : hashedPassword,
             age,
-            gender
+            gender,
+            photoUrl: req.body.photoUrl 
         })
         const newUser = await user.save();
         console.log("User created successfully:", newUser);
@@ -49,5 +52,13 @@ authRouter.post('/login', async (req, res)=>{
     }
     
 })
+
+authRouter.post('/logout', async (req, res) =>{
+    res.cookie('token', null, {
+        expires: new Date(Date.now())
+    })
+    return res.send("logout successful")
+})
+
 
 module.exports = authRouter

@@ -7,8 +7,10 @@ app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cookieParser());
 //add all the routers here
 const authRouter = require('./routers/authRouter');
+const profileRouter = require('./routers/profileRouter');
 // why app.use is throuwingg error?
 app.use("/", authRouter);
+app.use("/", profileRouter)
 
 connectDB.then(() => {
     app.listen(3000, () => {

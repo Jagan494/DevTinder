@@ -1,0 +1,22 @@
+# # Create a docker-compose file for a Node.js application with MongoDB
+# version: '3.8'
+# services:
+#   app:
+#     image: node:14
+#     container_name: devtinder_app
+#     working_dir: /usr/src/app
+#     volumes:
+#       - .:/usr/src/app
+#     ports:
+#       - "3000:3000"
+#     environment:
+#     #   - MONGO_URI=mongodb://mongo:27017/devtinder
+#     command: npm start
+
+#   mongo:
+#     image: mongo:4.4
+#     container_name: devtinder_mongo
+#     volumes:
+#       - mongo_data:/data/db
+#     ports:
+#       - "27017:27017"
