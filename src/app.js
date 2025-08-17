@@ -8,9 +8,13 @@ app.use(cookieParser());
 //add all the routers here
 const authRouter = require('./routers/authRouter');
 const profileRouter = require('./routers/profileRouter');
+const connectionRequestRouter = require('./routers/connectionRequestRouter');
+const userRouter = require('./routers/userRouter')
 // why app.use is throuwingg error?
 app.use("/", authRouter);
 app.use("/", profileRouter)
+app.use("/", connectionRequestRouter)
+app.use("/", userRouter)
 
 connectDB.then(() => {
     app.listen(3000, () => {

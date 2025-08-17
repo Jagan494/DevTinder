@@ -25,4 +25,18 @@ const validateUser = (user) => {
     // Additional validation logic can be added here
 }
 
-module.exports = { validateUser };
+const validateEditProfileData = (data) => {
+    console.log("Data received for validation:", data);
+    const allowedFieldsToUpdate = ['firstName', 'lastName', 'photoUrl', 'age','gender'];
+    const isUpdatedAllowed = Object.keys(data).every(key => {
+        if (!allowedFieldsToUpdate.includes(key)) {
+            throw new Error(`Invalid update field: ${key}`);
+        }
+        return true;
+    });
+    console.log("Is update allowed:", isUpdatedAllowed);
+    if (!isUpdatedAllowed) {
+        throw new Error("Invalid update fields");
+    }
+}
+module.exports = { validateUser, validateEditProfileData };

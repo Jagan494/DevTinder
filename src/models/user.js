@@ -17,7 +17,8 @@ const userSchema = mongoose.Schema({
     },
     emailId: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -53,6 +54,7 @@ const userSchema = mongoose.Schema({
     }
 })
 
+userSchema.index({ firstName: 1, age: -1 }); // 1 for ascending, -1 for descending
 userSchema.methods.getJWT =async function () {
     const token = await jwt.sign({ _id: this._id, emailId: this.emailId }, 'namasteDev@123', {
         expiresIn: '1h' // Token expiration time

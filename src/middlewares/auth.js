@@ -14,7 +14,9 @@ const auth = async (req, res, next) => {
         const user = await User.findOne({ _id });
         if (!user) {
             return res.status(401).send("Unauthorized: User not found");
-        }       
+        }    
+        req.user = user; // Attach user to request object
+        console.log("User authenticated:", user);   
         next(); // Proceed to the next middleware or route handler
     } catch (error) {
         console.error("Token verification failed:", error);
